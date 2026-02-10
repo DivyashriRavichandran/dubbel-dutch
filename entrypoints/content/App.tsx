@@ -10,8 +10,14 @@ export default function App() {
     let pollInterval: NodeJS.Timeout | null = null;
 
     const checkText = () => {
-      // Look for the cue text inside the player
-      const cueElement = document.querySelector(".jw-text-track-cue");
+      // 1. Try JWPlayer (Kijk)
+      let cueElement = document.querySelector(".jw-text-track-cue");
+
+      // 2. Try Bitmovin (NPO)
+      if (!cueElement) {
+        cueElement = document.querySelector(".bmpui-ui-subtitle-label");
+      }
+
       const currentText = cueElement?.textContent?.trim() || "";
 
       if (currentText && currentText !== dutch) {
@@ -24,17 +30,19 @@ export default function App() {
     };
 
     const startObserving = () => {
-      const targetNode = document.querySelector(".jw-text-track-container");
+      // Target containers for both sites
+      const targetNode =
+        document.querySelector(".jw-text-track-container") ||
+        document.querySelector(".bmpui-ui-subtitle-overlay") ||
+        document.querySelector(".bitmovinplayer-container");
 
       if (!targetNode) {
         setTimeout(startObserving, 1000);
         return;
       }
 
-      // Fallback 1: Polling (Every 500ms)
       pollInterval = setInterval(checkText, 500);
 
-      // Fallback 2: Observer (For instant updates)
       observer = new MutationObserver(checkText);
       observer.observe(targetNode, {
         childList: true,
@@ -57,7 +65,7 @@ export default function App() {
       const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=nl&tl=en&dt=t&q=${encodeURIComponent(text)}`;
       const response = await fetch(url);
       const data = await response.json();
-      const translated = data[0].map((item: any) => item[0]).join("");
+      const translated = data[0].map((item: any) => item[0]).join(" ");
 
       setEnglish(translated);
     } catch (err) {

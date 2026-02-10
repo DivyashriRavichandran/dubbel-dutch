@@ -3,28 +3,28 @@ import App from "./App.tsx";
 import "./style.css";
 
 export default defineContentScript({
-  matches: ["*://www.kijk.nl/*", "*://www.npo.nl/*"],
+  matches: ["*://*.kijk.nl/*", "*://*.npo.nl/*"],
   cssInjectionMode: "ui",
   async main(ctx) {
     let ui: any = null;
 
     // 1. Define the helper function here
     const hideNativeSubs = () => {
-      // Check if we've already added the style to avoid duplicates
       if (document.getElementById("dubbel-dutch-hide-style")) return;
 
       const style = document.createElement("style");
       style.id = "dubbel-dutch-hide-style";
       style.textContent = `
-        .jw-text-track-container, 
-        .jw-text-track-display, 
-        .jw-text-track-cue,
-        .tp-caption { 
-          display: none !important;
-          visibility: hidden !important;
-          opacity: 0 !important;
-        }
-      `;
+    /* JWPlayer (Kijk) */
+    .jw-text-track-container, .jw-text-track-display, .jw-text-track-cue {
+      display: none !important;
+    }
+    /* Bitmovin (NPO) */
+    .bmpui-ui-subtitle-overlay, .bmpui-ui-subtitle-label {
+      display: none !important;
+      visibility: hidden !important;
+    }
+  `;
       document.head.append(style);
     };
 
@@ -32,7 +32,8 @@ export default defineContentScript({
       const anchorElement =
         document.querySelector(".jw-wrapper") ||
         document.querySelector(".jwplayer") ||
-        document.querySelector(".npo-player-container");
+        document.querySelector(".bitmovinplayer-container") || // Added for NPO
+        document.querySelector(".bmpui-ui-uicontainer"); // Fallback for NPO UI
 
       if (!anchorElement || ui) return false;
 
