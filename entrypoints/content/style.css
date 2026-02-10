@@ -1,0 +1,41 @@
+:host {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 100 !important;
+}
+
+.dual-sub-wrapper {
+  position: absolute !important;
+  bottom: 8% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.sub-box {
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: white !important;
+  padding: 0.5vw 1.5vw !important;
+  margin-bottom: 0.5vw !important;
+  border-radius: 4px !important;
+  font-family: Arial, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 1.8vw !important; /* Scalable font size based on player width */
+  height: 1.3em !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.en {
+  color: #ffcc00 !important; /* Yellow for translation */
+  font-size: 1.5vw !important;
+}
+
+.fade-in {
+  animation: fadeIn 0.2s;
+}
