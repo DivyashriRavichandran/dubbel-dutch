@@ -9,7 +9,6 @@ export default function App() {
   });
 
   useEffect(() => {
-    // Load saved settings on open
     browser.storage.local
       .get(["enabled", "showDutch", "showEnglish"])
       .then((res) => {
@@ -30,11 +29,10 @@ export default function App() {
   return (
     <div className="popup-container">
       <header>
-        <div className="logo">🇳🇱</div>
-        <h1>DubbelDutch</h1>
+        <img src="/popup.svg" alt="logo" width={100} height={100} />
       </header>
 
-      <section className="main-toggle">
+      <section className={`hero-toggle ${settings.enabled ? "active" : ""}`}>
         <label className="switch">
           <input
             type="checkbox"
@@ -43,22 +41,33 @@ export default function App() {
           />
           <span className="slider round"></span>
         </label>
-        <span>{settings.enabled ? "Extension ON" : "Extension OFF"}</span>
+        <span className="status-text">
+          {settings.enabled ? "Active" : "Inactive"}
+        </span>
       </section>
 
-      <div className="settings-grid">
-        <div className="setting-item">
-          <span>Show Dutch</span>
+      <div className="settings-list">
+        <div className="setting-row">
+          <div className="text-group">
+            <span className="label">Dutch Subtitles</span>
+            <span className="sublabel">Native text</span>
+          </div>
           <input
             type="checkbox"
+            className="small-check"
             checked={settings.showDutch}
             onChange={(e) => updateSetting("showDutch", e.target.checked)}
           />
         </div>
-        <div className="setting-item">
-          <span>Show English</span>
+
+        <div className="setting-row">
+          <div className="text-group">
+            <span className="label">English Subtitles</span>
+            <span className="sublabel">Real-time translation</span>
+          </div>
           <input
             type="checkbox"
+            className="small-check"
             checked={settings.showEnglish}
             onChange={(e) => updateSetting("showEnglish", e.target.checked)}
           />
@@ -66,7 +75,7 @@ export default function App() {
       </div>
 
       <footer>
-        <p>Learning Dutch on Kijk & NPO</p>
+        Compatible with <span>Kijk & NPO</span>
       </footer>
     </div>
   );

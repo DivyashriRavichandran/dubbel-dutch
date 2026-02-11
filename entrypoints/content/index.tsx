@@ -32,8 +32,8 @@ export default defineContentScript({
       const anchorElement =
         document.querySelector(".jw-wrapper") ||
         document.querySelector(".jwplayer") ||
-        document.querySelector(".bitmovinplayer-container") || // Added for NPO
-        document.querySelector(".bmpui-ui-uicontainer"); // Fallback for NPO UI
+        document.querySelector(".bitmovinplayer-container") ||
+        document.querySelector(".bmpui-ui-uicontainer");
 
       if (!anchorElement || ui) return false;
 

@@ -10,10 +10,10 @@ export default function App() {
     let pollInterval: NodeJS.Timeout | null = null;
 
     const checkText = () => {
-      // 1. Try JWPlayer (Kijk)
+      // 1. JWPlayer (Kijk)
       let cueElement = document.querySelector(".jw-text-track-cue");
 
-      // 2. Try Bitmovin (NPO)
+      // 2. Bitmovin (NPO)
       if (!cueElement) {
         cueElement = document.querySelector(".bmpui-ui-subtitle-label");
       }
@@ -59,7 +59,7 @@ export default function App() {
     };
   }, [dutch]);
 
-  // 2. Google Translate API (Free Endpoint)
+  // Google Translate API
   const translateText = async (text: string) => {
     try {
       const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=nl&tl=en&dt=t&q=${encodeURIComponent(text)}`;
@@ -106,8 +106,8 @@ export default function App() {
 
   return (
     <div className="dual-sub-wrapper">
-      {showNl && <div className="sub-box nl">{dutch}</div>}
-      {showEn && <div className="sub-box en">{english}</div>}
+      {showNl && <div className="subtitles nl">{dutch}</div>}
+      {showEn && <div className="subtitles en">{english}</div>}
     </div>
   );
 }

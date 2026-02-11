@@ -1,6 +1,6 @@
 {
-  "name": "kijk-dual-subs",
-  "description": "Kijk Dual Subs extension for displaying dual subtitles",
+  "name": "dubbel-dutch",
+  "description": "Enable dual subtitles on NPO and Kijk.nl. Displays English translations alongside native Dutch subtitles.",
   "private": true,
   "version": "1.0.0",
   "type": "module",
