@@ -8,25 +8,43 @@ export default defineContentScript({
   async main(ctx) {
     let ui: any = null;
 
-    // 1. Define the helper function here
-    const hideNativeSubs = () => {
-      if (document.getElementById("dubbel-dutch-hide-style")) return;
+    // Switch ON/OFF
+    const updateNativeSubVisibility = (enabled: boolean) => {
+      let styleEl = document.getElementById("dubbel-dutch-hide-style");
 
-      const style = document.createElement("style");
-      style.id = "dubbel-dutch-hide-style";
-      style.textContent = `
-    /* JWPlayer (Kijk) */
-    .jw-text-track-container, .jw-text-track-display, .jw-text-track-cue {
-      display: none !important;
-    }
-    /* Bitmovin (NPO) */
-    .bmpui-ui-subtitle-overlay, .bmpui-ui-subtitle-label {
-      display: none !important;
-      visibility: hidden !important;
-    }
-  `;
-      document.head.append(style);
+      if (!enabled) {
+        styleEl?.remove(); // Show native subs again
+        return;
+      }
+
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.id = "dubbel-dutch-hide-style";
+        styleEl.textContent = `
+          .jw-text-track-container, .jw-text-track-display, .jw-text-track-cue,
+          .bmpui-ui-subtitle-overlay, .bmpui-ui-subtitle-label {
+            display: none !important;
+            visibility: hidden !important;
+          }
+        `;
+        document.head.append(styleEl);
+      }
     };
+
+    const settings = await browser.storage.local.get("enabled");
+    updateNativeSubVisibility((settings.enabled as boolean) ?? true);
+
+    browser.storage.onChanged.addListener((changes) => {
+      if (changes.enabled) {
+        updateNativeSubVisibility(changes.enabled.newValue as boolean);
+      }
+    });
+
+    browser.storage.onChanged.addListener((changes) => {
+      if (changes.enabled) {
+        updateNativeSubVisibility(!!changes.enabled.newValue);
+      }
+    });
 
     const mountToPlayer = async () => {
       const anchorElement =
@@ -36,9 +54,6 @@ export default defineContentScript({
         document.querySelector(".bmpui-ui-uicontainer");
 
       if (!anchorElement || ui) return false;
-
-      // 2. Call it right before mounting
-      hideNativeSubs();
 
       ui = await createShadowRootUi(ctx, {
         name: "dubbel-dutch-ui",

@@ -1,30 +1,54 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./style.css";
 
 export default function App() {
   const [dutch, setDutch] = useState("");
   const [english, setEnglish] = useState("");
+  const [showEn, setShowEn] = useState(true);
+  const [showNl, setShowNl] = useState(true);
+  const [globalOn, setGlobalOn] = useState(true);
+  const [isControlsVisible, setIsControlsVisible] = useState(false);
 
   useEffect(() => {
     let observer: MutationObserver | null = null;
     let pollInterval: NodeJS.Timeout | null = null;
 
     const checkText = () => {
-      // 1. JWPlayer (Kijk)
-      let cueElement = document.querySelector(".jw-text-track-cue");
+      if (!globalOn) return;
 
-      // 2. Bitmovin (NPO)
-      if (!cueElement) {
-        cueElement = document.querySelector(".bmpui-ui-subtitle-label");
-      }
+      let cueElement =
+        document.querySelector(".jw-text-track-cue") || // JWPlayer (Kijk)
+        document.querySelector(".bmpui-ui-subtitle-label"); // Bitmovin (NPO)
 
-      const currentText = cueElement?.textContent?.trim() || "";
+      let rawText = cueElement?.textContent?.trim() || "";
 
-      if (currentText && currentText !== dutch) {
-        setDutch(currentText);
-        translateText(currentText);
-      } else if (!currentText && dutch !== "") {
+      if (rawText) {
+        const formattedText = rawText.replace(/([.,!?])([a-zA-Z])/g, "$1 $2");
+
+        if (formattedText !== dutch) {
+          translateAndSet(formattedText);
+        }
+      } else if (dutch !== "") {
         setDutch("");
+        setEnglish("");
+      }
+    };
+
+    // Translate AND update Dutch after translation
+    const translateAndSet = async (text: string) => {
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=nl&tl=en&dt=t&q=${encodeURIComponent(text)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const translated = data[0].map((item: any) => item[0]).join(" ");
+
+        // Update BOTH at the same time
+        setDutch(text);
+        setEnglish(translated);
+      } catch (err) {
+        console.error("Translation error:", err);
+        // Even on error, show Dutch to avoid blank
+        setDutch(text);
         setEnglish("");
       }
     };
@@ -59,24 +83,6 @@ export default function App() {
     };
   }, [dutch]);
 
-  // Google Translate API
-  const translateText = async (text: string) => {
-    try {
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=nl&tl=en&dt=t&q=${encodeURIComponent(text)}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      const translated = data[0].map((item: any) => item[0]).join(" ");
-
-      setEnglish(translated);
-    } catch (err) {
-      console.error("DEBUG: Translation Error:", err);
-    }
-  };
-
-  const [showEn, setShowEn] = useState(true);
-  const [showNl, setShowNl] = useState(true);
-  const [globalOn, setGlobalOn] = useState(true);
-
   useEffect(() => {
     const syncSettings = async () => {
       const res = await browser.storage.local.get([
@@ -102,12 +108,46 @@ export default function App() {
     return () => browser.storage.onChanged.removeListener(listener);
   }, []);
 
+  useEffect(() => {
+    // Target the UI containers for NPO and Kijk
+    const playerUI =
+      document.querySelector(".bmpui-ui-uicontainer") ||
+      document.querySelector(".jwplayer");
+
+    if (!playerUI) return;
+
+    const observer = new MutationObserver(() => {
+      // NPO/Bitmovin specific check: looks for the 'bmpui-controls-shown' class
+      const npoShown = playerUI.classList.contains("bmpui-controls-shown");
+
+      // Kijk/JWPlayer specific check: JW adds 'jw-state-idle' or 'jw-flag-user-inactive' when hiding
+      const jwHidden =
+        playerUI.classList.contains("jw-flag-user-inactive") ||
+        playerUI.classList.contains("jw-state-idle");
+
+      setIsControlsVisible(
+        npoShown || (playerUI.classList.contains("jwplayer") && !jwHidden),
+      );
+    });
+
+    observer.observe(playerUI, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   if (!globalOn || !dutch) return null;
 
   return (
-    <div className="dual-sub-wrapper">
-      {showNl && <div className="subtitles nl">{dutch}</div>}
-      {showEn && <div className="subtitles en">{english}</div>}
+    <div
+      className={`dual-sub-wrapper ${isControlsVisible ? "controls-up" : ""}`}
+    >
+      <div className="bg-subtitles">
+        {showNl && <div className="subtitles nl">{dutch}</div>}
+        {showEn && <div className="subtitles en">{english}</div>}
+      </div>
     </div>
   );
 }

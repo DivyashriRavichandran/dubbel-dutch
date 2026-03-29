@@ -20,13 +20,10 @@ I’m moving to the Netherlands for my Master’s, so I've been learning Dutch t
 
 ## ✨ Features
 
-**Dual Subtitles:** See the original Dutch text and the English translation simultaneously.
-
-**Deep Integration:** Works directly inside the JWPlayer (Kijk) and Bitmovin (NPO) video containers.
-
-**Instant Toggles:** Use the popup menu to switch the extension on/off, or hide specific languages to test your listening skills.
-
-**Native Feel:** Automatically hides the original clunky player captions to provide a clean, modern subtitle UI.
+- **Dual Subtitles:** Displays both Dutch and English simultaneously.
+- **Toggle Control:** Easily enable/disable Dutch or English subs independently via the extension popup.
+- **Responsive Design:** Subtitles scale perfectly from small laptop screens to 4K monitors.
+- **Context-Aware UI:** Subtitles automatically slide up when player controls (seek bar/pause) are visible to prevent overlapping.
 
 ## 📖 How to Use
 
@@ -44,27 +41,16 @@ I’m moving to the Netherlands for my Master’s, so I've been learning Dutch t
 
 **Learn:** Enjoy learning Dutch while watching your favorite shows!
 
-## 🛠️ Built With
+## 🛠️ Tech Stack
 
-WXT - Next-gen Web Extension Framework.
-
-React.js - UI components.
-
-CSS3 - Styling.
-
-Google Translate API - Providing real-time, context-aware English translations.
+- **Framework:** [WXT](https://wxt.dev/) (Web Extension Toolbox)
+- **Frontend:** React + TypeScript
+- **Styling:** CSS
+- **APIs:** Google Translate API (GTX)
 
 ## 👨‍💻 Installation (For Developers)
 
-If you want to run this locally using WXT:
-
-```
-# Install dependencies
-npm install
-
-# Start development mode (launches a new Chrome instance)
-npm run dev
-
-# Build for production
-npm run build
-```
+1. Clone the repo: `git clone https://github.com/divyashri-ravichandran/dubbel-dutch.git`
+2. Install dependencies: `npm install`
+3. Run in development mode: `npm run dev`
+4. To build for production: `npm run build`
