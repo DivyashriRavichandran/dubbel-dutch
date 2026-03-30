@@ -81,7 +81,7 @@ export default function App() {
       if (observer) observer.disconnect();
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [dutch]);
+  }, []);
 
   useEffect(() => {
     const syncSettings = async () => {
@@ -109,26 +109,41 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Target the UI containers for NPO and Kijk
-    const playerUI =
+    // 1. More robust selectors for the containers that hold the "shown/hidden" classes
+    const getPlayerUI = () =>
       document.querySelector(".bmpui-ui-uicontainer") ||
       document.querySelector(".jwplayer");
 
-    if (!playerUI) return;
+    const checkVisibility = (el: Element) => {
+      // NPO: Check for the 'shown' class
+      const npoShown = el.classList.contains("bmpui-controls-shown");
 
-    const observer = new MutationObserver(() => {
-      // NPO/Bitmovin specific check: looks for the 'bmpui-controls-shown' class
-      const npoShown = playerUI.classList.contains("bmpui-controls-shown");
-
-      // Kijk/JWPlayer specific check: JW adds 'jw-state-idle' or 'jw-flag-user-inactive' when hiding
+      // Kijk: Check for 'inactive' or 'idle'
       const jwHidden =
-        playerUI.classList.contains("jw-flag-user-inactive") ||
-        playerUI.classList.contains("jw-state-idle");
+        el.classList.contains("jw-flag-user-inactive") ||
+        el.classList.contains("jw-state-idle");
 
-      setIsControlsVisible(
-        npoShown || (playerUI.classList.contains("jwplayer") && !jwHidden),
-      );
-    });
+      const isJW = el.classList.contains("jwplayer");
+
+      // Logic: If NPO is shown OR (if it's JW and not hidden)
+      setIsControlsVisible(npoShown || (isJW && !jwHidden));
+    };
+
+    const playerUI = getPlayerUI();
+    if (!playerUI) {
+      // If player isn't ready, try again in a bit
+      const retryTimeout = setTimeout(() => {
+        const retryUI = getPlayerUI();
+        if (retryUI) checkVisibility(retryUI);
+      }, 2000);
+      return () => clearTimeout(retryTimeout);
+    }
+
+    // 2. Run immediately to set initial state correctly
+    checkVisibility(playerUI);
+
+    // 3. Observe for changes
+    const observer = new MutationObserver(() => checkVisibility(playerUI));
 
     observer.observe(playerUI, {
       attributes: true,
