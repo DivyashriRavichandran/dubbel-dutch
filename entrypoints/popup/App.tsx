@@ -29,7 +29,7 @@ export default function App() {
   return (
     <div className="popup-container">
       <header>
-        <img src="/popup.svg" alt="logo" width={100} height={100} />
+        <img src="/popup-logo.svg" alt="popup logo" width={100} height={100} />
       </header>
 
       <section className={`hero-toggle ${settings.enabled ? "active" : ""}`}>
@@ -75,7 +75,7 @@ export default function App() {
       </div>
 
       <footer>
-        Compatible with <span>Kijk & NPO</span>
+        Compatible with <span>Kijk & NPO Start</span>
       </footer>
     </div>
   );

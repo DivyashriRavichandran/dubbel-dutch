@@ -1,6 +1,6 @@
 {
   "name": "dubbel-dutch",
-  "description": "Enable dual subtitles on NPO and Kijk.nl. Displays English translations alongside native Dutch subtitles.",
+  "description": "Dual Subtitles for NPO Start & Kijk.nl. Real-time Dutch-English translations for language learners.",
   "private": true,
   "version": "1.0.0",
   "type": "module",

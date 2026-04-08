@@ -109,7 +109,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // 1. More robust selectors for the containers that hold the "shown/hidden" classes
     const getPlayerUI = () =>
       document.querySelector(".bmpui-ui-uicontainer") ||
       document.querySelector(".jwplayer");
@@ -125,7 +124,6 @@ export default function App() {
 
       const isJW = el.classList.contains("jwplayer");
 
-      // Logic: If NPO is shown OR (if it's JW and not hidden)
       setIsControlsVisible(npoShown || (isJW && !jwHidden));
     };
 
@@ -139,10 +137,8 @@ export default function App() {
       return () => clearTimeout(retryTimeout);
     }
 
-    // 2. Run immediately to set initial state correctly
     checkVisibility(playerUI);
 
-    // 3. Observe for changes
     const observer = new MutationObserver(() => checkVisibility(playerUI));
 
     observer.observe(playerUI, {
