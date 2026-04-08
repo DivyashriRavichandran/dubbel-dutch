@@ -97,7 +97,6 @@ export default function App() {
 
     syncSettings();
 
-    // Listen for changes while the video is playing
     const listener = (changes: any) => {
       if (changes.enabled) setGlobalOn(changes.enabled.newValue);
       if (changes.showDutch) setShowNl(changes.showDutch.newValue);
@@ -109,44 +108,53 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const getPlayerUI = () =>
-      document.querySelector(".bmpui-ui-uicontainer") ||
-      document.querySelector(".jwplayer");
+    let observer: MutationObserver | null = null;
 
-    const checkVisibility = (el: Element) => {
-      // NPO: Check for the 'shown' class
-      const npoShown = el.classList.contains("bmpui-controls-shown");
+    const updateVisibility = () => {
+      const npoUI = document.querySelector(".bmpui-ui-uicontainer");
+      const jwUI = document.querySelector(".jwplayer");
 
-      // Kijk: Check for 'inactive' or 'idle'
-      const jwHidden =
-        el.classList.contains("jw-flag-user-inactive") ||
-        el.classList.contains("jw-state-idle");
+      let visible = false;
 
-      const isJW = el.classList.contains("jwplayer");
+      if (npoUI) {
+        // NPO uses 'bmpui-ui-shown' or 'bmpui-controls-shown'
+        visible =
+          npoUI.classList.contains("bmpui-ui-shown") ||
+          npoUI.classList.contains("bmpui-controls-shown");
+      } else if (jwUI) {
+        // JWPlayer
+        const isInactive =
+          jwUI.classList.contains("jw-flag-user-inactive") ||
+          jwUI.classList.contains("jw-state-idle");
+        visible = !isInactive;
+      }
 
-      setIsControlsVisible(npoShown || (isJW && !jwHidden));
+      setIsControlsVisible(visible);
     };
 
-    const playerUI = getPlayerUI();
-    if (!playerUI) {
-      // If player isn't ready, try again in a bit
-      const retryTimeout = setTimeout(() => {
-        const retryUI = getPlayerUI();
-        if (retryUI) checkVisibility(retryUI);
-      }, 2000);
-      return () => clearTimeout(retryTimeout);
-    }
+    const setupObserver = () => {
+      const target =
+        document.querySelector(".bitmovinplayer-container") ||
+        document.querySelector(".jwplayer") ||
+        document.body;
 
-    checkVisibility(playerUI);
+      observer = new MutationObserver((mutations) => {
+        updateVisibility();
+      });
 
-    const observer = new MutationObserver(() => checkVisibility(playerUI));
+      observer.observe(target, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ["class"],
+      });
+    };
 
-    observer.observe(playerUI, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+    setupObserver();
+    updateVisibility();
 
-    return () => observer.disconnect();
+    return () => {
+      if (observer) observer.disconnect();
+    };
   }, []);
 
   if (!globalOn || !dutch) return null;
