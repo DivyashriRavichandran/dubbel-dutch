@@ -3,7 +3,7 @@
 <img width="440" height="280" alt="promo-tile" src="https://github.com/user-attachments/assets/2fdcf6f0-0542-4b29-94d5-685c80f47be3" />
 </div>
 
-# DubbelDutch
+# DubbelDutch | [Available in the Chrome Web Store](https://chromewebstore.google.com/detail/dubbeldutch/apfkalbkcjejinheogjipngebdlebkpn)
 
 A browser extension that provides real-time English translations for Dutch streaming sites. It integrates subtitles directly into the native video players of NPO Start and Kijk.nl.
 
