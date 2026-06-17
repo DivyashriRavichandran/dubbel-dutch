@@ -30,16 +30,20 @@ A browser extension that provides real-time English translations for Dutch strea
 
 **Learn:** Enjoy learning Dutch while watching your favorite shows!
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework:** [WXT](https://wxt.dev/) (Web Extension Toolbox)
 - **Frontend:** React + TypeScript
 - **Styling:** CSS
 - **APIs:** Google Translate API (GTX)
 
-## 👨‍💻 Installation (For Developers)
+## 🛠️ Installation
 
 1. Clone the repo: `git clone https://github.com/divyashri-ravichandran/dubbel-dutch.git`
 2. Install dependencies: `npm install`
 3. Run in development mode: `npm run dev`
 4. To build for production: `npm run build`
+
+## System Design
+<img width="823" height="670" alt="dubbeldutch" src="https://github.com/user-attachments/assets/3c1a37ae-2e4e-44dc-89d5-da20b56d8ce8" />
+
